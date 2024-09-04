@@ -9,6 +9,7 @@ urlpatterns = [
     path('items/', views.items, name='items'),  # Ensure 'items' view is defined
     path("<int:pk>/edit/", views.edit_class, name="edit"),
     path("new/", views.new, name="new"),
+    path('inbox/<int:pk>/', views.inbox, name='inbox'),
     path("class_detail/<int:pk>/", views.class_detail, name="class_detail"),
     path("enroll/<int:course_id>/", views.enroll_in_class, name="enroll_in_class"),
     path('progress/', views.progress_page, name='progress_page'),

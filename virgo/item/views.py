@@ -276,3 +276,16 @@ def enroll_domain(request, domain_id):
 
     return JsonResponse({'status': 'already_enrolled', 'enrollment_status': '✔ Enrolled/Progressing'})
 
+@login_required
+def inbox(request, pk):
+    # Fetch the domain or item based on the primary key (pk)
+    domain = get_object_or_404(Domain, pk=pk)
+    
+    # Check if the user is a student who enrolled in the domain
+    if not request.user.is_student or not domain.enrollments.filter(user=request.user).exists():
+        # Redirect or show an error message if the user is not authorized
+        return redirect('some_error_page')  # Update with an actual error page or redirect URL
+
+    return render(request, 'item/inbox.html', {
+        'domain': domain,
+    })
