@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Puddle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="py-6 px-6 flex justify-between items-center border-b border-gray-300 bg-white">
+        <a href="/" class="text-xl font-bold">Puddle</a>
+        <div class="space-x-6 flex items-center">
+            <a href="{% url 'core:login' %}" class="text-lg font-semibold hover:text-gray-500">Logout</a>
+            <a href="{% url 'item:items' %}" class="text-lg font-semibold hover:text-gray-500">Browse</a>
+            <a href="{% url 'conversation:inbox' %}" class="px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">Inbox</a>
+              </div>
+    </nav>
+
+{% if request.user.is_staff %}
+    <div class="bg-gray-100 p-6 rounded-xy">
+        <h2 class="text-2xl font-semibold mb-4">Your Uploaded Courses</h2>
+        {% if enrollments %}
+            <ul>
+                {% for enrollment in enrollments %}
+                    <li class="mb-4">
+                        <h3 class="text-xl font-semibold">{{ enrollment.course.class_name }}</h3>
+                        <p><strong>Student:</strong> {{ enrollment.user.username }}</p>
+                        <p>{{ enrollment.course.description }}</p>
+                        <p><strong>Start Time:</strong> {{ enrollment.start_time }}</p>
+                        {% if enrollment.end_time %}
+                            <p><strong>Finish Time:</strong> {{ enrollment.end_time }}</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No students have enrolled in your courses yet.</p>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="bg-gray-100 p-6 rounded-xl">
+        {% if classes %}
+            <h2 class="text-2xl font-semibold mb-6">Available Classes:</h2>
+            <div class="space-y-4">
+                {% for class in classes %}
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h4 class="text-xl font-semibold">{{ class.class_name }}</h4>
+                        <p class="mt-2">{{ class.description }}</p>
+
+                        {% if class.id not in started_classes %}
+                            <!-- Start Progress Button -->
+                            <form action="{% url 'item:start_progress' class.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg">Start Progress</button>
+                            </form>
+                        {% else %}
+                            <!-- Display Uploaded Materials -->
+                            <div class="mt-4">
+                                <h5 class="text-lg font-semibold">Uploaded Materials:</h5>
+                                
+                                <ul class="list-disc ml-6">
+                                    {% if class.pdf %}
+                                        <li><a href="{{ class.pdf.url }}" class="text-blue-500" target="_blank">Download PDF</a></li>
+                                    {% endif %}
+                                    {% if class.video %}
+                                        <li><a href="{{ class.video.url }}" class="text-blue-500" target="_blank">Watch Video</a></li>
+                                    {% endif %}
+                                    {% if class.document %}
+                                        <li><a href="{{ class.document.url }}" class="text-blue-500" target="_blank">Download Document</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <!-- Finish Button -->
+                            <form action="{% url 'item:finish_progress' class.id %}" method="POST">
+                                {% csrf_token %}
+                                <a href="#" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white hover:bg-teal-700 rounded-xl">Contact Instructor</a>
+                    
+                                <button type="submit" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-gray-500 text-white hover:bg-teal-700 rounded-xl">Finish Class</button>
+                            </form>
+                        {% endif %}
+
+                        {% if class.learning_paths.all %}
+                            <div class="mt-4">
+                                <h5 class="text-lg font-semibold">Learning Paths:</h5>
+                                <ul>
+                                    {% for learning_path in class.learning_paths.all %}
+                                        <li>{{ learning_path.name }}: {{ learning_path.description }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">No classes available at the moment.</p>
+        {% endif %}
+    </div>
+{% endif %}
+
+<!-- Progress Bar -->
+<div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+    <h3 class="text-2xl font-semibold mb-4">Your Learning Path</h3>
+    <div class="relative">
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ progress_percentage }}%;"></div>
+            {% for class_position in class_positions %}
+                <div class="progress-marker" style="left: {{ class_position.position_percentage }}%;"></div>
+                <div class="progress-label" style="left: {{ class_position.position_percentage }}%;">{{ class_position.class_name }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+

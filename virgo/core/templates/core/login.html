@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+{% load static tailwind_tags %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="w-1/2 my-6 p-4 mx-auto bg-white rounded-xl shadow-lg relative overflow-hidden">
+        <h1 class="mb-6 text-3xl font-bold text-gray-900">Login</h1>
+        <form method="post" action=".">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="inline-block mb-2 text-gray-700">Username</label><br>
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                <label class="inline-block mb-2 text-gray-700">Password</label><br>
+                {{ form.password }}
+            </div>
+
+            {% if form.errors or form.non_field_errors %}
+            <div class="mb-3 p-6 bg-red-100 rounded-xl text-red-600">
+                {% for field in form %}
+                    {{ field.errors }}
+                {% endfor %}
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <button class="py-3 px-8 text-lg bg-[#F45369] hover:bg-[#e03e50] rounded-md text-white font-sans transition-colors duration-300">Submit</button>
+        </form>
+
+        <p class="mt-4 text-center text-gray-600">Don’t have an account? <a href="{% url 'core:signup' %}" class="text-teal-500 hover:underline">Sign up</a></p>
+        
+        <!-- Background animation -->
+        <div class="absolute inset-0 z-[-1] overflow-hidden">
+            <div class="absolute w-[600px] h-[600px] rounded-full bg-[#456990] opacity-15 animate-wave1"></div>
+            <div class="absolute w-[600px] h-[600px] rounded-full bg-[#028090] opacity-20 animate-wave2"></div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ item.domain.name }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-6 gap-6">
+    <div class="col-span-2">
+        {% if item.domain.images %}
+            <img src="{{ item.domain.images.url }}" class="rounded-xl">
+        {% else %}
+            <img src="#" class="rounded-xl">  <!-- Adjusted for missing default image URL -->
+        {% endif %}
+    </div>
+
+    <div class="col-span-4 p-6 bg-gray-100 rounded-xl">
+        <h1 class="mb-6 text-3xl font-semibold">{{ item.domain.name }}</h1>
+
+        <!-- Updated Courses Section -->
+        <p class="text-gray-700"><strong>Courses:</strong></p>
+        <ul class="list-disc ml-5 text-gray-700">
+            {% for class_item in item.domain.get_classes %}
+                <li>{{ class_item.class_name }}</li>
+            {% endfor %}
+        </ul>
+
+        {% if item.description %}
+            <p class="text-gray-700 mt-4">
+                <strong class="text-gray-500">Description:</strong><br>
+                {{ item.description }}
+            </p>
+        {% endif %}
+
+        <p class="text-gray-500 mt-4"><strong>Instructor: </strong>{{ item.created_by.username }}</p>
+
+        {% if request.user.is_staff %}
+            <div class="mt-6 p-6 bg-white rounded-xl">
+                <p>This is your class!</p>
+                <a href="{% url 'item:edit' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Edit</a>
+                <a href="{% url 'item:delete' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-red-500 text-white rounded-xl">Delete</a>
+                <a href="{% url 'item:progress_page'%}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Show Enrollments</a>
+            </div>
+        {% else %}
+            {% if user_enrolled %}
+                <a href="{% url 'item:progress_page' %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Continue Progress</a>
+            {% else %}
+                <!-- Enroll Domain Button with Enrollment Logic -->
+                <form method="post" action="{% url 'item:enroll_domain' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Enroll Domain</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-6 px-6 py-12 bg-gray-200 rounded-xl">
+    <h2 class="mb-12 text-2xl font-semibold text-center">Related Classes</h2>
+    <div class="grid grid-cols-3 gap-3">
+        {% for related_item in related_items %}
+        <div>
+            <a href="#">
+                {% if related_item.image %}
+                    <div><img src="#" class="rounded-t-xl"></div>
+                {% else %}
+                    <div><img src="#" class="rounded-t-xl"></div>
+                {% endif %}
+                <div class="p-6 bg-white rounded-b-xl">
+                    <h2 class="text-xl">{{ related_item.class_name }}</h2>
+                    <p class="text-gray-500">Domain: {{ related_item.domain.name }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

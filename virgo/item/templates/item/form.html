@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-6 text-3xl font-bold">{{ title }}</h1>
+
+<form method="post" action="." enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="space-y-4">
+        {{ form.as_p }}
+    </div>
+    {% if form.errors or form.non_field_errors %}
+        <div class="mb-3 p-6 bg-red-100 rounded-xl">
+            {% for field in form %}
+                {{ field.errors }}
+            {% endfor %}
+            {{ form.non_field_errors }}
+            </div>
+    {% endif %}
+    <button class="mt-6 py-3 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">Submit</button>
+</form>
+{% endblock %}
+
+{% if classes %}
+<h2 class="text-2xl font-semibold mb-6">Available Classes:</h2>
+<div class="space-y-4">
+    {% for class in classes %}
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h4 class="text-xl font-semibold">{{ class.class_name }}</h4>
+            <p class="mt-2">{{ class.description }}</p>
+            {% if class.pdf %}
+                <a href="{{ class.pdf.url }}" class="text-blue-500" target="_blank">Download PDF</a>
+            {% endif %}
+            {% if class.video %}
+                <a href="{{ class.video.url }}" class="text-blue-500" target="_blank">Watch Video</a>
+            {% endif %}
+            {% if class.document %}
+                <a href="{{ class.document.url }}" class="text-blue-500" target="_blank">Download Document</a>
+            {% endif %}
+            {% if class.learning_paths.all %}
+                <div class="mt-4">
+                    <h5 class="text-lg font-semibold">Learning Paths:</h5>
+                    <ul>
+                        {% for leanring_path in class.learning_paths.all %}
+                            <li>{{ path.name }}: {{ path.description }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500">No classes available at the moment.</p>
+{% endif %}
