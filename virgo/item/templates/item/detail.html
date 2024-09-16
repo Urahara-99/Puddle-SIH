@@ -1,8 +1,24 @@
-{% extends 'core/base.html' %}
-
-{% block title %}{{ item.domain.name }}{% endblock %}
-
-{% block content %}
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Student Dashboard | Puddle</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+	</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="px-8 flex justify-between items-center border-b border-gray-300" style="background-color: rgb(5, 139, 169); padding: 32px; ">
+        <a href="/" class="text-2xl font-bold text-white">Learn with, Puddle!</a>
+        <div class="space-x-6 flex items-center text-white">
+        <a href="{% url 'core:login' %}" class="text-lg font-semibold hover:text-white-500">Logout</a>
+        <a href="{% url 'item:new' %}" class="text-lg font-semibold hover:text-white-500">New Upload</a>
+        <a href="{% url 'conversation:inbox' %}" class="text-lg font-semibold hover:text-gray-500">Inbox</a>
+   </div>
+</nav>
+<div class="px-6 py-6">
 <div class="grid grid-cols-6 gap-6">
     <div class="col-span-2">
         {% if item.domain.images %}
@@ -34,7 +50,7 @@
 
         {% if request.user.is_staff %}
             <div class="mt-6 p-6 bg-white rounded-xl">
-                <p>This is your class!</p>
+                <p>More Options:</p>
                 <a href="{% url 'item:edit' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Edit</a>
                 <a href="{% url 'item:delete' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-red-500 text-white rounded-xl">Delete</a>
                 <a href="{% url 'item:progress_page'%}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Show Enrollments</a>
@@ -52,25 +68,4 @@
         {% endif %}
     </div>
 </div>
-
-<div class="mt-6 px-6 py-12 bg-gray-200 rounded-xl">
-    <h2 class="mb-12 text-2xl font-semibold text-center">Related Classes</h2>
-    <div class="grid grid-cols-3 gap-3">
-        {% for related_item in related_items %}
-        <div>
-            <a href="#">
-                {% if related_item.image %}
-                    <div><img src="#" class="rounded-t-xl"></div>
-                {% else %}
-                    <div><img src="#" class="rounded-t-xl"></div>
-                {% endif %}
-                <div class="p-6 bg-white rounded-b-xl">
-                    <h2 class="text-xl">{{ related_item.class_name }}</h2>
-                    <p class="text-gray-500">Domain: {{ related_item.domain.name }}</p>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
 </div>
-{% endblock %}

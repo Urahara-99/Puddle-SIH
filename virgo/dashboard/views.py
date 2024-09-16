@@ -24,22 +24,21 @@ def custom_login(request):
 @login_required
 def student_dashboard(request):
     user = request.user
-    
-    # Fetch domains where the student is enrolled in at least one class
-    domains = Domain.objects.filter(
-        classes__enrollment__user=user
-    ).annotate(
-        enrolled_classes_count=Count('classes__enrollment', filter=Q(classes__enrollment__user=user))
-    ).distinct()
 
-    for domain in domains:
-        domain.is_enrolled = Enrollment.objects.filter(user=user, course__domain=domain).exists()
+    # Get all domains where the user is enrolled
+    domains = Domain.objects.filter(classes__enrollment__user=user).distinct()
+
+    # Get all enrollments for the user
+    enrollments = Enrollment.objects.filter(user=user).select_related('course', 'course__domain')
 
     context = {
+        'user': user,
         'domains': domains,
+        'enrollments': enrollments,
     }
 
     return render(request, 'dashboard/student_dashboard.html', context)
+
 
 @login_required
 def staff_dashboard(request):
@@ -83,3 +82,35 @@ def enroll_domain(request, domain_id):
         Enrollment.objects.get_or_create(user=user, course=class_instance)
 
     return redirect('dashboard:domain_detail', domain_id=domain.id)
+
+def dashboard_view(request):
+    user = request.user
+
+    # Get the number of courses for each status
+    finished_courses = Enrollment.objects.filter(user=user, status='finished').count()
+    ongoing_courses = Enrollment.objects.filter(user=user, status='ongoing').count()
+    ended_courses = Enrollment.objects.filter(user=user, status='ended').count()
+
+    # Pass the counts to the template context
+    context = {
+        'finished_courses': finished_courses,
+        'ongoing_courses': ongoing_courses,
+        'ended_courses': ended_courses,
+    }
+
+    return render(request, 'dashboard/student_dashboard.html', context)
+
+@login_required
+def student_enroll_view(request):
+    # Fetch all domains
+    domains = Domain.objects.all()
+
+    # For each domain, check if the current user is enrolled
+    for domain in domains:
+        domain.is_enrolled = Enrollment.objects.filter(user=request.user, course__domain=domain).exists()
+
+    context = {
+        'domains': domains
+    }
+
+    return render(request, 'dashboard/student_enroll.html', context)

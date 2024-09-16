@@ -28,7 +28,7 @@ def signup(request):
 
             # Redirect or perform different actions based on user type
             if user_type == 'student':
-                return redirect('/student-dashboard/')
+                return redirect('/dashboard/student-dashboard/')
             elif user_type == 'faculty':
                 return redirect('/staff-dashboard/')
     else:

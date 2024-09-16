@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% block title %}{% endblock %} | Puddle</title>
+    <title>Learning | Puddle</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -63,8 +63,9 @@
             width: 70px;
             height: 60px;
             border-radius: 100%;
-            background-color: #090119;
+            background-color: #ffffff;
             display: flex;
+            border-color: rgb(252, 148, 12);
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -78,10 +79,10 @@
             font-size: 0.9rem;
             padding: 10px;
             font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-            background-color: rgb(1, 0, 23);
+            background-color: rgb(4, 193, 183);
             border-radius: 10px;
             font-weight: bold;
-            color: wheat;
+            color: rgb(18, 17, 15);
             animation: glow 1s infinite alternate;
         }
     </style>
@@ -173,9 +174,11 @@
         </div>
     </div>
 </main>
-<div class="floating-icon" onclick="togglePopup()">
-    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Chatbot Icon" width="50" height="50">
-    <div class="floating-text">May I help you?</div> 
+<div class="floating-icon">
+    <a href="http://127.0.0.1:5000/">
+        <img src="https://static.vecteezy.com/system/resources/previews/010/927/083/original/chatbot-icon-on-white-background-online-support-service-bot-sign-chat-bot-sign-for-support-service-concept-flat-style-vector.jpg" alt="Chatbot Icon" width="50" height="50">
+        <div class="floating-text">May I help you?</div> 
+    </a>
 </div>
 </body>
 </html>

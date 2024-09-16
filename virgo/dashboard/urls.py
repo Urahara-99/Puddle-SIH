@@ -8,6 +8,7 @@ urlpatterns = [
     path('staff/', views.staff_dashboard, name='staff_dashboard'),
     path('domain/<int:domain_id>/', views.domain_detail, name='domain_detail'),
     path('enroll/domain/<int:domain_id>/', views.enroll_domain, name='enroll_domain'),  
+    path('student_dashboard/student_enroll/', views.student_enroll_view, name='student_enroll'),
     
     # other patterns
 ]

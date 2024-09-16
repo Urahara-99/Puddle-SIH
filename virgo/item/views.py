@@ -185,9 +185,7 @@ def student_dashboard(request):
     context = {
         'domains': domains,
     }
-    return render(request, 'dashboard/dashboard.html', context)
-
-    
+    return render(request, 'dashboard/student_dashboard.html', context)
 
 @login_required
 def learning_path_detail(request, pk):
@@ -270,22 +268,43 @@ def enroll_domain(request, domain_id):
         if first_class:
             enrollment = Enrollment.objects.create(user=user, course=first_class)
             # Record the enrollment start time
-            enrollment.start_time = datetime.now()
+            enrollment.start_time = timezone.now()  # Use timezone-aware datetime
             enrollment.save()
-            return JsonResponse({'status': 'enrolled', 'enrollment_status': '✔ Enrolled/Progressing'})
+            context = {
+                'domain': domain,
+                'enrollment': enrollment,
+                # Add any other context variables needed for the template
+            }
+            return render(request, 'item/domain_detail.html', context)
 
-    return JsonResponse({'status': 'already_enrolled', 'enrollment_status': '✔ Enrolled/Progressing'})
+    # If already enrolled or no class found
+    return render(request, 'item/domain_detail.html', {'domain': domain})
+
 
 @login_required
 def inbox(request, pk):
     # Fetch the domain or item based on the primary key (pk)
     domain = get_object_or_404(Domain, pk=pk)
     
-    # Check if the user is a student who enrolled in the domain
-    if not request.user.is_student or not domain.enrollments.filter(user=request.user).exists():
-        # Redirect or show an error message if the user is not authorized
-        return redirect('some_error_page')  # Update with an actual error page or redirect URL
-
     return render(request, 'item/inbox.html', {
         'domain': domain,
     })
+
+def dashboard_view(request):
+    user = request.user
+    # Get all enrollments for the user
+    enrollments = Enrollment.objects.filter(user=user)
+    
+    # Calculate the number of completed, ongoing, and ended courses
+    finished_courses = enrollments.filter(status='finished').count()
+    ongoing_courses = enrollments.filter(status='ongoing').count()
+    ended_courses = enrollments.filter(status='ended').count()
+
+    context = {
+        'user': user,
+        'finished_courses': finished_courses,
+        'ongoing_courses': ongoing_courses,
+        'ended_courses': ended_courses,
+    }
+
+    return render(request, 'dashboard/student_dashboard.html', context)

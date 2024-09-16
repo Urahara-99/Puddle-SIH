@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "tailwind",
     "theme",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "django_browser_reload",
     "core",
     "conversation",
@@ -50,6 +52,10 @@ INSTALLED_APPS = [
 ]
 
 TAILWIND_APP_NAME = "theme"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 
 INTERNAL_IPS = [
     "120.0.0.1",
@@ -67,7 +73,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
-
 
 ROOT_URLCONF = "virgo.urls"
 

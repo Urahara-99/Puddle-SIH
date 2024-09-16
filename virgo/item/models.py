@@ -24,11 +24,12 @@ class Domain(models.Model):
         return completed_classes
 
     def get_progress_percentage(self, user):
-        total_classes = self.get_total_classes()
-        if total_classes == 0:
-            return 0
-        completed_classes = self.get_completed_classes(user)
-        return (completed_classes / total_classes) * 100
+        total_classes = self.classes.count()
+        completed_classes = self.classes.filter(enrollment__user=user, enrollment__is_completed=True).count()
+
+        if total_classes > 0:
+            return (completed_classes / total_classes) * 100
+        return 0
 
 class Skill(models.Model):
     domain = models.ForeignKey(Domain, related_name='skills', on_delete=models.CASCADE)
@@ -90,12 +91,22 @@ class ExcelFile(models.Model):
         return self.title
 
 class Enrollment(models.Model):
+    STATUS_CHOICES = [
+        ('ongoing', 'Ongoing'),
+        ('finished', 'Finished'),
+        ('ended', 'Ended'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Class, on_delete=models.CASCADE)
     enrolled_at = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    
+    is_completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ongoing')
+
+    def __str__(self):
+        return f"{self.user} - {self.course} - {self.status}"
 
     class Meta:
         unique_together = ('user', 'course')
